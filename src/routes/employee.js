@@ -1,5 +1,6 @@
 const express = require('express');
-const authMiddleware = require('../middlewares/authMiddleware');
+const { check } = require('express-validator');
+const authMiddleware = require('../middlewares/AuthMiddleware');
 const employeeController = require('../controllers/EmployeeController');
 
 const router = express.Router();
@@ -11,10 +12,24 @@ router.get('/', authMiddleware, employeeController.getAllEmployees);
 router.get('/:id', authMiddleware, employeeController.getEmployeeById);
 
 // Crear un nuevo empleado
-router.post('/', authMiddleware, employeeController.createEmployee);
+router.post('/', authMiddleware, 
+    [
+        check('name').trim().escape(),
+        check('position').trim().escape(),
+        check('department').trim().escape(),
+        check('manager').trim().escape()
+    ],
+    employeeController.createEmployee);
 
 // Actualizar un empleado por ID
-router.put('/:id', authMiddleware, employeeController.getEmployeeById);
+router.put('/:id', authMiddleware,
+    [
+        check('name').trim().escape(),
+        check('position').trim().escape(),
+        check('department').trim().escape(),
+        check('manager').trim().escape()
+    ],
+     employeeController.getEmployeeById);
 
 module.exports = router;
 

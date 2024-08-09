@@ -1,11 +1,20 @@
 const express = require('express');
-const authMiddleware = require('../middlewares/authMiddleware');
+const { check } = require('express-validator');
+const { escape } = require('validator');
+const authMiddleware = require('../middlewares/AuthMiddleware');
 const { createQuestion, listQuestions, updateQuestion } = require('../controllers/QuestionController');
 
 const router = express.Router();
 
 // Crear nueva pregunta
-router.post('/', authMiddleware, createQuestion);
+router.post('/', 
+    [
+        check('text').trim().escape(),
+        check('type').trim().escape(),
+        check('options').isArray().withMessage('Questions must be an array')
+        .customSanitizer(value => value.map(q => escape(q.trim())))
+    ],
+    authMiddleware, createQuestion);
 
 // Listar preguntas
 /**
@@ -25,6 +34,13 @@ router.post('/', authMiddleware, createQuestion);
 router.get('/', authMiddleware, listQuestions);
 
 // Actualizar pregunta por ID
-router.put('/:id', authMiddleware, updateQuestion);
+router.put('/:id',
+    [
+        check('text').trim().escape(),
+        check('type').trim().escape(),
+        check('options').isArray().withMessage('Questions must be an array')
+        .customSanitizer(value => value.map(q => escape(q.trim())))
+    ], 
+    authMiddleware, updateQuestion);
 
 module.exports = router;

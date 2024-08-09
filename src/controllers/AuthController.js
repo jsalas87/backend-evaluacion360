@@ -1,13 +1,21 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { validationResult } = require('express-validator');
 const User = require('../models/User');
 const BadRequestError = require('../middlewares/BadRequestError');
 
 // Registro de usuario
 exports.registerUser = async (req, res, next) => {
-  const { username, email, password, role } = req.body;
 
   try {
+
+    const errors = validationResult(req);
+    const errorMessages = errors.array().map(err => err.msg).join(', ');
+    if (!errors.isEmpty()) {
+      throw new BadRequestError(errorMessages);
+    }
+    const { username, email, password, role } = req.body;
+
     let user = await User.findOne({ email });
     if (user) throw new BadRequestError('User already exists');
 
@@ -28,9 +36,17 @@ exports.registerUser = async (req, res, next) => {
 
 // Login de usuario
 exports.loginUser = async (req, res, next) => {
-  const { email, password } = req.body;
 
   try {
+
+    const errors = validationResult(req);
+    const errorMessages = errors.array().map(err => err.msg).join(', ');
+    if (!errors.isEmpty()) {
+      throw new BadRequestError(errorMessages);
+    }
+
+    const { email, password } = req.body;
+
     const user = await User.findOne({ email });
     if (!user) throw new BadRequestError('Invalid credentials');
 

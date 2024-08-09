@@ -1,11 +1,17 @@
 const express = require('express');
-const authMiddleware = require('../middlewares/authMiddleware');
+const { check } = require('express-validator');
+const authMiddleware = require('../middlewares/AuthMiddleware');
 const { createEvaluation, listEvaluations, getEvaluationById, updateEvaluation } = require('../controllers/EvaluationController');
 
 const router = express.Router();
 
 // Crear nueva evaluación
-router.post('/', authMiddleware, createEvaluation);
+router.post('/', 
+    [
+        check('period').trim().escape(),
+        check('type').trim().escape()
+    ],
+    authMiddleware, createEvaluation);
 
 // Listar evaluaciones
 router.get('/', authMiddleware, listEvaluations);
@@ -14,7 +20,12 @@ router.get('/', authMiddleware, listEvaluations);
 router.get('/:id', authMiddleware, getEvaluationById);
 
 // Actualizar evaluación por ID
-router.put('/:id', authMiddleware, updateEvaluation);
+router.put('/:id', 
+    [
+        check('period').trim().escape(),
+        check('type').trim().escape()
+    ],
+    authMiddleware, updateEvaluation);
 
 module.exports = router;
 

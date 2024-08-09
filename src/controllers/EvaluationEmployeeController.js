@@ -1,3 +1,4 @@
+const { validationResult } = require('express-validator');
 const EvaluationEmployee = require('../models/EvaluationEmployee');
 const evaluationEmployeeService = require('../services/EvaluationEmployeeService');
 const NotFoundRequestError = require('../middlewares/NotFoundRequestError');
@@ -5,9 +6,14 @@ const BadRequestError = require('../middlewares/BadRequestError');
 
 exports.createEvaluationemployee = async (req, res, next) => {
 
-    const { employee, evaluation, questions } = req.body;
-
     try {
+        const errors = validationResult(req);
+        const errorMessages = errors.array().map(err => err.msg).join(', ');
+        if (!errors.isEmpty()) {
+            throw new BadRequestError(errorMessages);
+        }
+
+        const { employee, evaluation, questions } = req.body;
         const newEvaluationemployee = new EvaluationEmployee({ employee, evaluation, questions });
         newEvaluationemployee.state = 'pending'
         const evaluationEmployee = await newEvaluationemployee.save();
