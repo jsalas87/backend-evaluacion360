@@ -1,4 +1,4 @@
-const Answer = require('../models/Answer');
+const {Answer} = require('../models/Answer');
 const NotFoundRequestError = require('../middlewares/NotFoundRequestError');
 
 exports.createAnswer = async (req, res, next) => {
@@ -7,7 +7,7 @@ exports.createAnswer = async (req, res, next) => {
     try {
         const newAnswer = new Answer({ question, response });
         const answer = await newAnswer.save();
-        res.json(answer);
+        res.status(201).json(answer);
     } catch (err) {
         next(err)
     }
