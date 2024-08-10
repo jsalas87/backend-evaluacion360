@@ -1,6 +1,7 @@
 const express = require('express');
 const { check } = require('express-validator');
 const authMiddleware = require('../middlewares/AuthMiddleware');
+const roleMiddleware = require('../middlewares/RoleMiddleware');
 const { createAnswer, getAnswerById, updateAnswer } = require('../controllers/AnswerController');
 
 const router = express.Router();
@@ -61,7 +62,7 @@ router.post('/', [
         check('question').trim().escape(),
         check('response').trim().escape()
     ],
-    authMiddleware, createAnswer);
+    authMiddleware, roleMiddleware(['admin', 'manager']), createAnswer);
 
 /**
  * @swagger
@@ -99,7 +100,7 @@ router.post('/', [
  *       401:
  *         description: No autorizado, se requiere autenticación.
  */
-router.get('/:id', authMiddleware, getAnswerById);
+router.get('/:id', authMiddleware, roleMiddleware(['admin', 'manager']),  getAnswerById);
 
 /**
  * @swagger
@@ -159,6 +160,6 @@ router.put('/:id', [
         check('question').trim().escape(),
         check('response').trim().escape()
     ],
-    authMiddleware, updateAnswer);
+    authMiddleware, roleMiddleware(['admin', 'manager']), updateAnswer);
 
 module.exports = router;

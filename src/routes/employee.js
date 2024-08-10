@@ -1,6 +1,7 @@
 const express = require('express');
 const { check } = require('express-validator');
 const authMiddleware = require('../middlewares/AuthMiddleware');
+const roleMiddleware = require('../middlewares/RoleMiddleware');
 const employeeController = require('../controllers/EmployeeController');
 
 const router = express.Router();
@@ -47,7 +48,7 @@ const router = express.Router();
  *       401:
  *         description: No autorizado, se requiere autenticación.
  */
-router.get('/', authMiddleware, employeeController.getAllEmployees);
+router.get('/', authMiddleware, roleMiddleware(['admin', 'manager']), employeeController.getAllEmployees);
 
 /**
  * @swagger
@@ -91,7 +92,7 @@ router.get('/', authMiddleware, employeeController.getAllEmployees);
  *       401:
  *         description: No autorizado, se requiere autenticación.
  */
-router.get('/:id', authMiddleware, employeeController.getEmployeeById);
+router.get('/:id', authMiddleware, roleMiddleware(['admin', 'manager']), employeeController.getEmployeeById);
 
 /**
  * @swagger
@@ -152,7 +153,7 @@ router.get('/:id', authMiddleware, employeeController.getEmployeeById);
  *       401:
  *         description: No autorizado, se requiere autenticación.
  */
-router.post('/', authMiddleware, 
+router.post('/', authMiddleware, roleMiddleware(['admin']),
     [
         check('name').trim().escape(),
         check('position').trim().escape(),
@@ -229,7 +230,7 @@ router.post('/', authMiddleware,
  *       401:
  *         description: No autorizado, se requiere autenticación.
  */
-router.put('/:id', authMiddleware,
+router.put('/:id', authMiddleware, roleMiddleware(['admin', 'manager']),
     [
         check('name').trim().escape(),
         check('position').trim().escape(),
