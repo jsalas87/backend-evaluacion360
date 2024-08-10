@@ -1,11 +1,20 @@
+const { validationResult } = require('express-validator');
 const Question = require('../models/Question');
 const NotFoundRequestError = require('../middlewares/NotFoundRequestError');
 
 // Crear nueva pregunta
 exports.createQuestion = async (req, res, next) => {
-  const { text, type, options } = req.body;
 
   try {
+
+    const errors = validationResult(req);
+    const errorMessages = errors.array().map(err => err.msg).join(', ');
+    if (!errors.isEmpty()) {
+      throw new BadRequestError(errorMessages);
+    }
+
+    const { text, type, options } = req.body;
+
     const newQuestion = new Question({ text, type, options });
     const question = await newQuestion.save();
     res.json(question);
@@ -26,9 +35,17 @@ exports.listQuestions = async (req, res, next) => {
 
 // Actualizar pregunta por ID
 exports.updateQuestion = async (req, res, next) => {
-  const { text, type, options } = req.body;
 
   try {
+
+    const errors = validationResult(req);
+    const errorMessages = errors.array().map(err => err.msg).join(', ');
+    if (!errors.isEmpty()) {
+      throw new BadRequestError(errorMessages);
+    }
+
+    const { text, type, options } = req.body;
+
     let question = await Question.findById(req.params.id);
     if (!question) throw new NotFoundRequestError('question employee not found');
 
