@@ -2,9 +2,20 @@ const express = require('express');
 const { check } = require('express-validator');
 const { escape } = require('validator');
 const authMiddleware = require('../middlewares/AuthMiddleware');
+const roleMiddleware = require('../middlewares/RoleMiddleware');
+const cache = require('../config/redis');
 const { createQuestion, listQuestions, updateQuestion } = require('../controllers/QuestionController');
 
 const router = express.Router();
+
+cache.on('connected', () => {
+    console.log('Conectado a Redis para caché');
+  });
+  
+  cache.on('error', (err) => {
+    console.error('Error en Redis:', err);
+  });
+  
 
 /**
  * @swagger
@@ -75,7 +86,7 @@ router.post('/',
         check('options').isArray().withMessage('Options must be an array')
         .customSanitizer(value => value.map(q => escape(q.trim())))
     ],
-    authMiddleware, createQuestion);
+    authMiddleware, roleMiddleware(['admin', 'manager']), createQuestion);
 
 /**
  * @swagger
@@ -111,7 +122,7 @@ router.post('/',
  *       401:
  *         description: No autorizado, se requiere autenticación.
  */
-router.get('/', authMiddleware, listQuestions);
+router.get('/', authMiddleware,  roleMiddleware(['admin', 'manager']), cache.route(), listQuestions);
 
 /**
  * @swagger
@@ -184,7 +195,7 @@ router.put('/:id',
         check('options').isArray().withMessage('Options must be an array')
         .customSanitizer(value => value.map(q => escape(q.trim())))
     ], 
-    authMiddleware, updateQuestion);
+    authMiddleware,  roleMiddleware(['admin', 'manager']), updateQuestion);
 
 module.exports = router;
 

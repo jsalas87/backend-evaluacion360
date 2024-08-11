@@ -2,6 +2,7 @@ const express = require('express');
 const { check } = require('express-validator');
 const { escape } = require('validator');
 const authMiddleware = require('../middlewares/AuthMiddleware');
+const roleMiddleware = require('../middlewares/RoleMiddleware');
 const evaluationEmployeeController = require('../controllers/EvaluationEmployeeController');
 
 const router = express.Router();
@@ -76,7 +77,7 @@ router.post('/',
         check('questions').isArray().withMessage('Questions must be an array')
         .customSanitizer(value => value.map(q => escape(q.trim())))
     ],
-    authMiddleware, evaluationEmployeeController.createEvaluationemployee);
+    authMiddleware, roleMiddleware(['admin', 'manager']), evaluationEmployeeController.createEvaluationemployee);
 
 /**
  * @swagger
@@ -188,6 +189,6 @@ router.post('/:id/respond',
         check('employee').trim().escape(),
         check('evaluation').trim().escape()
     ],
-    authMiddleware, evaluationEmployeeController.respondEvaluationEmployee);
+    authMiddleware, roleMiddleware(['admin', 'employee']), evaluationEmployeeController.respondEvaluationEmployee);
 
 module.exports = router;

@@ -1,6 +1,7 @@
 const express = require('express');
 const { check } = require('express-validator');
 const authMiddleware = require('../middlewares/AuthMiddleware');
+const roleMiddleware = require('../middlewares/RoleMiddleware');
 const { createEvaluation, listEvaluations, getEvaluationById, updateEvaluation } = require('../controllers/EvaluationController');
 
 const router = express.Router();
@@ -62,7 +63,7 @@ router.post('/',
         check('period').trim().escape(),
         check('type').trim().escape()
     ],
-    authMiddleware, createEvaluation);
+    authMiddleware, roleMiddleware(['admin']), createEvaluation);
 
 /**
  * @swagger
@@ -93,7 +94,7 @@ router.post('/',
  *       401:
  *         description: No autorizado, se requiere autenticación.
  */
-router.get('/', authMiddleware, listEvaluations);
+router.get('/', authMiddleware, roleMiddleware(['admin', 'manager']), listEvaluations);
 
 /**
  * @swagger
@@ -131,7 +132,7 @@ router.get('/', authMiddleware, listEvaluations);
  *       401:
  *         description: No autorizado, se requiere autenticación.
  */
-router.get('/:id', authMiddleware, getEvaluationById);
+router.get('/:id', authMiddleware, roleMiddleware(['admin', 'manager']), getEvaluationById);
 
 /**
  * @swagger
