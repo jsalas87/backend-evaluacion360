@@ -25,6 +25,7 @@ exports.createQuestion = async (req, res, next) => {
 
 // Listar preguntas
 exports.listQuestions = async (req, res, next) => {
+  console.log('listQuestions ejecutado, obteniendo preguntas...');
   try {
     const questions = await Question.find();
     res.json(questions);

@@ -1,6 +1,7 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const connectDB = require('./src/config/db');
+const cache = require('./src/config/redis');
 const dotenv = require('dotenv');
 
 dotenv.config();

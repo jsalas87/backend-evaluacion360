@@ -3,9 +3,19 @@ const { check } = require('express-validator');
 const { escape } = require('validator');
 const authMiddleware = require('../middlewares/AuthMiddleware');
 const roleMiddleware = require('../middlewares/RoleMiddleware');
+const cache = require('../config/redis');
 const { createQuestion, listQuestions, updateQuestion } = require('../controllers/QuestionController');
 
 const router = express.Router();
+
+cache.on('connected', () => {
+    console.log('Conectado a Redis para caché');
+  });
+  
+  cache.on('error', (err) => {
+    console.error('Error en Redis:', err);
+  });
+  
 
 /**
  * @swagger
@@ -112,7 +122,7 @@ router.post('/',
  *       401:
  *         description: No autorizado, se requiere autenticación.
  */
-router.get('/', authMiddleware,  roleMiddleware(['admin', 'manager']), listQuestions);
+router.get('/', authMiddleware,  roleMiddleware(['admin', 'manager']), cache.route(), listQuestions);
 
 /**
  * @swagger

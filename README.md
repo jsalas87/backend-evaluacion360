@@ -77,6 +77,10 @@ Asegúrate de tener instalados los siguientes programas en tu máquina:
 ```bash
     JWT_SECRET=tu_secreto_jwt
     MONGO_URI=mongodb://localhost:27017/tu_base_de_datos
+
+    REDIS_HOST=tu_host_redis
+    REDIS_PORT=tu_puerto_redis
+    REDIS_EXPIRE=tu_expire_redis
 ```
 
 4. **Ejecuta la aplicación**
