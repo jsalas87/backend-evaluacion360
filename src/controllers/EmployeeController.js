@@ -1,12 +1,12 @@
-const Employee = require('../models/Employee');
-const NotFoundRequestError = require('../middlewares/NotFoundRequestError');
+// controllers/EmployeeController.js
+const EmployeeService = require('../services/EmployeeService');
 
 exports.getAllEmployees = async (req, res, next) => {
     try {
-        const employees = await Employee.find();
+        const employees = await EmployeeService.getAllEmployees();
         res.json(employees);
     } catch (err) {
-        next(err)
+        next(err);
     }
 };
 
@@ -14,42 +14,29 @@ exports.createEmployee = async (req, res, next) => {
     const { name, position, department, manager } = req.body;
 
     try {
-        const newEmployee = new Employee({ name, position, department, manager });
-        const employee = await newEmployee.save();
+        const employee = await EmployeeService.createEmployee({ name, position, department, manager });
         res.json(employee);
     } catch (err) {
-        next(err)
+        next(err);
     }
-}
+};
 
 exports.getEmployeeById = async (req, res, next) => {
-
     try {
-        const employee = await Employee.findById(req.params.id);
-        if (!employee) throw new NotFoundRequestError('Employee not found');
+        const employee = await EmployeeService.getEmployeeById(req.params.id);
         res.json(employee);
-      } catch (err) {
-        next(err)
-      }
-
-}
+    } catch (err) {
+        next(err);
+    }
+};
 
 exports.updateEmployee = async (req, res, next) => {
-
     const { name, position, department, manager } = req.body;
 
     try {
-        let employee = await Employee.findById(req.params.id);
-        if (!employee) throw new NotFoundRequestError('Employee not found');
-
-        employee.name = name || employee.name;
-        employee.position = position || employee.position;
-        employee.department = department || employee.department;
-        employee.manager = manager || employee.manager;
-
-        await employee.save();
+        const employee = await EmployeeService.updateEmployee(req.params.id, { name, position, department, manager });
         res.json(employee);
     } catch (err) {
-        next(err)
+        next(err);
     }
-}
+};
