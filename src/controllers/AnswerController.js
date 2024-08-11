@@ -1,26 +1,22 @@
-const Answer = require('../models/Answer');
-const NotFoundRequestError = require('../middlewares/NotFoundRequestError');
+const AnswerService = require('../services/AnswerService');
 
 exports.createAnswer = async (req, res, next) => {
     const { question, response } = req.body;
 
     try {
-        const newAnswer = new Answer({ question, response });
-        const answer = await newAnswer.save();
-        res.json(answer);
+        const answer = await AnswerService.createAnswer({ question, response });
+        res.status(201).json(answer);
     } catch (err) {
-        next(err)
+        next(err);
     }
 };
 
 exports.getAnswerById = async (req, res, next) => {
     try {
-        const answer = await Answer.findById(req.params.id)
-            .populate('question');
-        if (!answer) throw new NotFoundRequestError('Answer not found');
+        const answer = await AnswerService.getAnswerById(req.params.id);
         res.json(answer);
     } catch (err) {
-        next(err)
+        next(err);
     }
 };
 
@@ -28,13 +24,9 @@ exports.updateAnswer = async (req, res, next) => {
     const { response } = req.body;
 
     try {
-        let answer = await Answer.findById(req.params.id);
-        if (!answer) throw new NotFoundRequestError('Answer not found');
-
-        answer.response = response || answer.response;
-        await answer.save();
+        const answer = await AnswerService.updateAnswer(req.params.id, { response });
         res.json(answer);
     } catch (err) {
-        next(err)
+        next(err);
     }
 };

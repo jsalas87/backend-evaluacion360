@@ -1,5 +1,7 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const connectDB = require('./src/config/db');
+const cache = require('./src/config/redis');
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -11,6 +13,14 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: 'Too many requests from this IP, please try again later.'
+});
+
+app.use(limiter);
 
 // Rutas
 app.use('/api/auth', require('./src/routes/auth'));
